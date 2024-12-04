@@ -46,4 +46,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: registry.cloud.cbh.kth.se/${{ secrets.DOCKER_TAG }}
+          tags: ${{ secrets.DOCKER_TAG }}
