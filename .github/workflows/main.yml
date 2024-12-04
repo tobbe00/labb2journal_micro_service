@@ -25,7 +25,7 @@ jobs:
 
       # 3. Bygg projektet med Maven och skapa .jar-filen
       - name: Build with Maven
-        run: mvn clean package -DskipTests -q
+        run: mvn clean package -DskipTests
 
       # 4. Verifiera att .jar-filen skapades
       - name: Verify .jar file
