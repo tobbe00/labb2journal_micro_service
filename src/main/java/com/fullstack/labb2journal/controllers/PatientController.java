@@ -1,0 +1,75 @@
+package com.fullstack.labb2journal.controllers;
+
+import com.fullstack.labb2journal.dto.ConditionDTO;
+import com.fullstack.labb2journal.dto.ObservationDTO;
+import com.fullstack.labb2journal.dto.PatientDTO;
+import com.fullstack.labb2journal.dto.PatientJournalDTO;
+import com.fullstack.labb2journal.entitys.Patient;
+import com.fullstack.labb2journal.services.ConditionService;
+import com.fullstack.labb2journal.services.ObservationService;
+import com.fullstack.labb2journal.services.PatientService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import com.fullstack.labb2journal.entitys.User;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/patients")
+public class PatientController {
+    @Autowired
+    private PatientService patientService;
+    @Autowired
+    private ObservationService observationService;
+
+    @Autowired
+    private ConditionService conditionService;
+
+
+    @GetMapping
+    public List<PatientDTO> getAllPatients() {
+        return patientService.getAllPatients();
+    }
+
+    @GetMapping("/{id}")
+    public PatientDTO getPatientById(@PathVariable Long id) {
+        return patientService.getPatientById(id);
+    }
+
+    @PostMapping("/makeNote")
+    public ObservationDTO addObservation(@RequestBody ObservationDTO observationDTO) {
+        return observationService.createObservation(observationDTO);
+    }
+    @PostMapping("/makeDiagnosis")
+    public ConditionDTO addDiagnosis(@RequestBody ConditionDTO conditionDTO) {
+        return conditionService.createCondition(conditionDTO);
+    }
+    @GetMapping("/{id}/journal")
+    public PatientJournalDTO getPatientJournal(@PathVariable Long id) {
+        PatientDTO patient = patientService.getPatientById(id);
+
+        // Hämta tillstånd och observationer för patienten
+        List<ConditionDTO> conditions = conditionService.getConditionsByPatientId(id.intValue());
+        List<ObservationDTO> observations = observationService.getObservationsByPatientId(id.intValue());
+        User.Gender g;
+        if (patient.getGender().equals("MALE")){
+            g=User.Gender.MALE;
+        }else if(patient.getGender().equals("FEMALE")){
+            g=User.Gender.FEMALE;
+        }else {
+            g=User.Gender.OTHER;
+        }
+        // Skapa och returnera PatientJournalDTO
+        PatientJournalDTO patientJournalDTO = new PatientJournalDTO(
+                patient.getName(),
+                patient.getAge(),
+                g,
+                conditions,
+                observations
+        );
+        return patientJournalDTO;
+    }
+
+
+
+}
