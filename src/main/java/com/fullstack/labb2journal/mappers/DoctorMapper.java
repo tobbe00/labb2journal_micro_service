@@ -24,8 +24,12 @@ public class DoctorMapper implements Mapper<Doctor, DoctorDTO> {
 
     @Override
     public DoctorDTO mapToDTO(Doctor doctor) {
-        return mapper.map(doctor, DoctorDTO.class);
+        System.out.println("Mapping Doctor: " + doctor); // Debug
+        DoctorDTO result = mapper.map(doctor, DoctorDTO.class);
+        System.out.println("Mapped DoctorDTO: " + result); // Debug
+        return result;
     }
+
 
     @Override
     public Doctor mapToEntity(DoctorDTO doctorDTO) {

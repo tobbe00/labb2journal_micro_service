@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checka ut koden från repository
+
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 2. Ställ in JDK 17 (du använder en 17-baserad Docker-bild)
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -23,15 +23,15 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # 3. Bygg projektet med Maven och skapa .jar-filen
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
 
-      # 4. Verifiera att .jar-filen skapades
+      - name: Build with Maven
+        run: mvn clean package
+
+
       - name: Verify .jar file
         run: ls -la ./target
 
-      # 5. Logga in på KTH Cloud Docker Registry
+
       - name: Login to Docker Registry
         uses: docker/login-action@v3
         with:
@@ -39,7 +39,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 6. Bygg och pusha Docker-image
+
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:

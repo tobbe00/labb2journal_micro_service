@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . .
 
 # Bygg applikationen och skapa .jar-filen
-RUN mvn clean package -DskipTests
+RUN mvn clean package
 
 # Stage 2: Skapa en lättviktig körningsmiljö
 FROM openjdk:17-jdk-slim

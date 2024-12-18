@@ -10,7 +10,6 @@ import com.fullstack.labb2journal.repositories.DoctorRepository;
 import com.fullstack.labb2journal.repositories.ObservationRepository;
 import com.fullstack.labb2journal.repositories.PatientRepository;
 import com.fullstack.labb2journal.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,32 +18,34 @@ import java.util.List;
 
 @Service
 public class ObservationService {
-    @Autowired
-    private ObservationRepository observationRepository;
-    @Autowired
-    private PatientRepository patientRepository;
-    @Autowired
-    private DoctorRepository doctorRepository;
-    @Autowired
-    private UserRepository userRepository;
 
-
+    private final ObservationRepository observationRepository;
+    private final PatientRepository patientRepository;
+    private final DoctorRepository doctorRepository;
+    private final UserRepository userRepository;
     private final Mapper<Observation, ObservationDTO> observationMapper;
 
-    public ObservationService(Mapper<Observation, ObservationDTO> observationMapper) {
+    public ObservationService(ObservationRepository observationRepository,
+                              PatientRepository patientRepository,
+                              DoctorRepository doctorRepository,
+                              UserRepository userRepository,
+                              Mapper<Observation, ObservationDTO> observationMapper) {
+        this.observationRepository = observationRepository;
+        this.patientRepository = patientRepository;
+        this.doctorRepository = doctorRepository;
+        this.userRepository = userRepository;
         this.observationMapper = observationMapper;
     }
+
     public ObservationDTO createObservation(ObservationDTO observationDTO) {
         observationDTO.setDate(LocalDate.now());
 
-        User uDoc=userRepository.findById(observationDTO.getDoctorId()).get();
-        User uPatient=userRepository.findById(observationDTO.getPatientId()).get();
+        User doctorUser = userRepository.findById(observationDTO.getDoctorId()).orElseThrow();
+        User patientUser = userRepository.findById(observationDTO.getPatientId()).orElseThrow();
 
-        Doctor doctor=doctorRepository.findByUser(uDoc);
-        Patient patient=patientRepository.findByUser(uPatient).get();
+        Doctor doctor = doctorRepository.findByUser(doctorUser);
+        Patient patient = patientRepository.findByUser(patientUser).orElseThrow();
 
-
-        //skiter i mappning de funkade ändå inte.
         Observation observation = new Observation();
         observation.setDoctor(doctor);
         observation.setPatient(patient);
@@ -53,28 +54,23 @@ public class ObservationService {
 
         return observationMapper.mapToDTO(observationRepository.save(observation));
     }
+
     public List<ObservationDTO> getObservationsByPatientId(Integer patientId) {
+        List<Observation> observations = observationRepository.findByPatient_PatientId(patientId);
         List<ObservationDTO> observationDTOs = new ArrayList<>();
 
-        // Hämta observationer för den specifika patienten
-        List<Observation> observations = observationRepository.findByPatient_PatientId(patientId);
-
         for (Observation observation : observations) {
-            Doctor doctor = observation.getDoctor(); // Hämta läkare om finns
-            int doctorId = doctor != null ? doctor.getDoctorId() : 0; // Hantera null-värden
+            Doctor doctor = observation.getDoctor();
+            int doctorId = doctor != null ? doctor.getDoctorId() : 0;
 
-            // Skapa en DTO för observationen
-            ObservationDTO observationDTO = new ObservationDTO(
+            observationDTOs.add(new ObservationDTO(
                     observation.getDescription(),
                     observation.getDate(),
-                    patientId, // Koppla till patient
-                    doctorId   // Koppla till doktor
-            );
-            observationDTOs.add(observationDTO);
+                    patientId,
+                    doctorId
+            ));
         }
 
         return observationDTOs;
     }
-
-
 }
