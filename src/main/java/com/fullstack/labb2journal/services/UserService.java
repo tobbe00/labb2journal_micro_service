@@ -31,13 +31,16 @@ public class UserService {
     private final Mapper<Doctor, DoctorDTO>doctorMapper;
     private final Mapper<User,UserDTO>userMapper;
 
+    /*
     public UserService(Mapper<Worker, WorkerDTO> workerMapper, Mapper<Doctor, DoctorDTO> doctorMapper, Mapper<User, UserDTO> userMapper) {
         this.workerMapper = workerMapper;
         this.doctorMapper = doctorMapper;
         this.userMapper = userMapper;
     }
 
-/*
+     */
+
+
     // Konstruktor för att injicera alla beroenden
     public  UserService(DoctorRepository doctorRepository,
                         WorkerRepository workerRepository,
@@ -52,7 +55,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
- */
+
 
 
     public List<DoctorDTO> getAllDoctors() {
