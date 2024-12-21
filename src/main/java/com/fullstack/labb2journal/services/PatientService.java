@@ -36,9 +36,7 @@ public class PatientService {
         return patientMapper.mapToDTO(patientRepository.findById(Math.toIntExact(id)).orElse(null));
     }
 
-    public PatientDTO savePatient(Patient patient) {
-
+    /*public PatientDTO savePatient(Patient patient) {
         return patientMapper.mapToDTO(patientRepository.save(patient));
-    }
-
+    }*/
 }

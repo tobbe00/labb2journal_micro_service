@@ -22,10 +22,15 @@ public class WorkerMapper implements Mapper<Worker, WorkerDTO>{
         });
     }
 
+
     @Override
     public WorkerDTO mapToDTO(Worker worker) {
-        return mapper.map(worker, WorkerDTO.class);
+        System.out.println("Mapping Worker: " + worker);
+        WorkerDTO result = mapper.map(worker, WorkerDTO.class);
+        System.out.println("Mapped WorkerDTO: " + result);
+        return result;
     }
+
 
     @Override
     public Worker mapToEntity(WorkerDTO workerDTO) {
