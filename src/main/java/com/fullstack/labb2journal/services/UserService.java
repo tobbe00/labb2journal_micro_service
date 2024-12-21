@@ -8,7 +8,6 @@ import com.fullstack.labb2journal.dto.WorkerDTO;
 import com.fullstack.labb2journal.entitys.*;
 import com.fullstack.labb2journal.mappers.Mapper;
 import com.fullstack.labb2journal.repositories.DoctorRepository;
-import com.fullstack.labb2journal.repositories.PatientRepository;
 import com.fullstack.labb2journal.repositories.UserRepository;
 import com.fullstack.labb2journal.repositories.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -29,23 +27,9 @@ public class UserService {
     private UserRepository userRepository;
 
 
-
-
-    private final DoctorRepository doctorRepository;
-    private final WorkerRepository workerRepository;
     private final Mapper<Worker, WorkerDTO> workerMapper;
     private final Mapper<Doctor, DoctorDTO>doctorMapper;
     private final Mapper<User,UserDTO>userMapper;
-
-
-    // Konstruktor för att injicera alla beroenden
-    public UserService(DoctorRepository doctorRepository,
-                       WorkerRepository workerRepository,
-                       Mapper<Worker, WorkerDTO> workerMapper,
-                       Mapper<Doctor, DoctorDTO> doctorMapper) {
-        this.doctorRepository = doctorRepository;
-        this.workerRepository = workerRepository;
-
 
     public UserService(Mapper<Worker, WorkerDTO> workerMapper, Mapper<Doctor, DoctorDTO> doctorMapper, Mapper<User, UserDTO> userMapper) {
         this.workerMapper = workerMapper;
@@ -53,6 +37,22 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
+/*
+    // Konstruktor för att injicera alla beroenden
+    public  UserService(DoctorRepository doctorRepository,
+                        WorkerRepository workerRepository,
+                        Mapper<Worker, WorkerDTO> workerMapper,
+                        Mapper<Doctor, DoctorDTO> doctorMapper, Mapper<Worker, WorkerDTO> workerMapper1, Mapper<Doctor, DoctorDTO> doctorMapper1, Mapper<User, UserDTO> userMapper) {
+        this.doctorRepository = doctorRepository;
+        this.workerRepository = workerRepository;
+
+
+        this.workerMapper = workerMapper1;
+        this.doctorMapper = doctorMapper1;
+        this.userMapper = userMapper;
+    }
+
+ */
 
 
     public List<DoctorDTO> getAllDoctors() {
