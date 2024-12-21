@@ -1,13 +1,11 @@
 package com.fullstack.labb2journal.controllers;
 
-import com.fullstack.labb2journal.dto.ConditionDTO;
-import com.fullstack.labb2journal.dto.ObservationDTO;
-import com.fullstack.labb2journal.dto.PatientDTO;
-import com.fullstack.labb2journal.dto.PatientJournalDTO;
+import com.fullstack.labb2journal.dto.*;
 import com.fullstack.labb2journal.entitys.Patient;
 import com.fullstack.labb2journal.services.ConditionService;
 import com.fullstack.labb2journal.services.ObservationService;
 import com.fullstack.labb2journal.services.PatientService;
+import com.fullstack.labb2journal.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.fullstack.labb2journal.entitys.User;
@@ -24,6 +22,8 @@ public class PatientController {
 
     @Autowired
     private ConditionService conditionService;
+    @Autowired
+    private UserService userService;
 
 
     @GetMapping
@@ -68,6 +68,10 @@ public class PatientController {
                 observations
         );
         return patientJournalDTO;
+    }
+    @GetMapping("/patientByEmail")
+    public UserDTO getPatientByEmail(@RequestParam String email) {
+        return userService.getUserByEmail(email);
     }
 
 

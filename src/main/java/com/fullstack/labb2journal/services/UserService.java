@@ -25,18 +25,22 @@ public class UserService {
     private DoctorRepository doctorRepository;
     @Autowired
     private WorkerRepository workerRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
 
 
     private final Mapper<Worker, WorkerDTO> workerMapper;
     private final Mapper<Doctor, DoctorDTO>doctorMapper;
+    private final Mapper<User,UserDTO>userMapper;
 
 
 
-    public UserService(Mapper<Worker, WorkerDTO> workerMapper, Mapper<Doctor, DoctorDTO> doctorMapper) {
+    public UserService(Mapper<Worker, WorkerDTO> workerMapper, Mapper<Doctor, DoctorDTO> doctorMapper, Mapper<User, UserDTO> userMapper) {
         this.workerMapper = workerMapper;
         this.doctorMapper = doctorMapper;
+        this.userMapper = userMapper;
     }
 
 
@@ -57,6 +61,9 @@ public class UserService {
             workerDTOs.add(workerMapper.mapToDTO(worker));
         }
         return workerDTOs;
+    }
+    public UserDTO getUserByEmail(String email) {
+        return userMapper.mapToDTO(userRepository.findByEmail(email));
     }
 
     public List<EmployeeDTO> getAllEmployees() {

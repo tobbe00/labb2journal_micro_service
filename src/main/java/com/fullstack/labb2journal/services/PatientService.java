@@ -40,4 +40,5 @@ public class PatientService {
 
         return patientMapper.mapToDTO(patientRepository.save(patient));
     }
+
 }
