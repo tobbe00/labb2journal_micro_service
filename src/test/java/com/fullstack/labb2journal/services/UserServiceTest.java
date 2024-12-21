@@ -43,7 +43,7 @@ class UserServiceTest {
 
 
 
-        userService = new UserService(doctorRepository, workerRepository, workerMapper, doctorMapper,workerMapper1,doctorMapper1,userMapper);
+        userService = new UserService(doctorRepository, workerRepository, workerMapper, doctorMapper,userMapper);
     }
 
     @Test

@@ -43,19 +43,18 @@ public class UserService {
 
 
     // Konstruktor för att injicera alla beroenden
-    public  UserService(DoctorRepository doctorRepository,
-                        WorkerRepository workerRepository,
-                        Mapper<Worker, WorkerDTO> workerMapper,
-                        Mapper<Doctor, DoctorDTO> doctorMapper, Mapper<Worker, WorkerDTO> workerMapper1, Mapper<Doctor, DoctorDTO> doctorMapper1, Mapper<User, UserDTO> userMapper) {
+    public UserService(DoctorRepository doctorRepository,
+                       WorkerRepository workerRepository,
+                       Mapper<Worker, WorkerDTO> workerMapper,
+                       Mapper<Doctor, DoctorDTO> doctorMapper,
+                       Mapper<User, UserDTO> userMapper
+                       ) {
         this.doctorRepository = doctorRepository;
         this.workerRepository = workerRepository;
-
-
-        this.workerMapper = workerMapper1;
-        this.doctorMapper = doctorMapper1;
+        this.workerMapper = workerMapper;
+        this.doctorMapper = doctorMapper;
         this.userMapper = userMapper;
     }
-
 
 
 
