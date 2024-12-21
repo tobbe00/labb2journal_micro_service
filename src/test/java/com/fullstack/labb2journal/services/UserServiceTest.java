@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-/*
+
 class UserServiceTest {
 
     private UserService userService;
@@ -27,6 +27,8 @@ class UserServiceTest {
     private WorkerRepository workerRepository;
     private Mapper<Doctor, DoctorDTO> doctorMapper;
     private Mapper<Worker, WorkerDTO> workerMapper;
+    private Mapper<Doctor, DoctorDTO> doctorMapper1;
+    private Mapper<Worker, WorkerDTO> workerMapper1;
     private Mapper<User, UserDTO>userMapper;
 
     @BeforeEach
@@ -35,9 +37,13 @@ class UserServiceTest {
         workerRepository = mock(WorkerRepository.class);
         doctorMapper = mock(Mapper.class);
         workerMapper = mock(Mapper.class);
-        userMapper=mock(Mapper.class);
+        doctorMapper1 = mock(Mapper.class);
+        workerMapper1 = mock(Mapper.class);
+        userMapper = mock(Mapper.class);
 
-        userService = new UserService(doctorRepository, workerRepository, workerMapper, doctorMapper,userMapper);
+
+
+        userService = new UserService(doctorRepository, workerRepository, workerMapper, doctorMapper,workerMapper1,doctorMapper1,userMapper);
     }
 
     @Test
@@ -113,5 +119,5 @@ class UserServiceTest {
 
 
 }
-*/
+
 
