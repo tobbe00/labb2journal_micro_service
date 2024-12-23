@@ -71,6 +71,7 @@ public class PatientController {
         return patientJournalDTO;
     }
     @PreAuthorize("isAuthenticated()")
+    @CrossOrigin(origins = "https://labb2frontend.app.cloud.cbh.kth.se")
     @GetMapping("/patientByEmail")
     public UserDTO getPatientByEmail(@RequestParam String email) {
         return userService.getUserByEmail(email);
