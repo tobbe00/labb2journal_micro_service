@@ -7,6 +7,7 @@ import com.fullstack.labb2journal.services.ObservationService;
 import com.fullstack.labb2journal.services.PatientService;
 import com.fullstack.labb2journal.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.fullstack.labb2journal.entitys.User;
 
@@ -69,6 +70,7 @@ public class PatientController {
         );
         return patientJournalDTO;
     }
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/patientByEmail")
     public UserDTO getPatientByEmail(@RequestParam String email) {
         return userService.getUserByEmail(email);
