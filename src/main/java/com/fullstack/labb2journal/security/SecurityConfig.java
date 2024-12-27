@@ -34,7 +34,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtAuthenticationConverter jwtAuthConverter() {
+    public KeycloakJwtRolesConverter jwtAuthConverter() {
         return new KeycloakJwtRolesConverter(); // Use the KeycloakJwtRolesConverter
     }
 }
