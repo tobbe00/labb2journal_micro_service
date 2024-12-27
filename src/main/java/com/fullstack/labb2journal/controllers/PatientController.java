@@ -26,25 +26,27 @@ public class PatientController {
     @Autowired
     private UserService userService;
 
-
+    @PreAuthorize("hasAnyRole('worker', 'doctor')")
     @GetMapping
     public List<PatientDTO> getAllPatients() {
         return patientService.getAllPatients();
     }
-
+    @PreAuthorize("hasAnyRole('worker', 'doctor')")
     @GetMapping("/{id}")
     public PatientDTO getPatientById(@PathVariable Long id) {
         return patientService.getPatientById(id);
     }
-
+    @PreAuthorize("hasAnyRole('worker', 'doctor')")
     @PostMapping("/makeNote")
     public ObservationDTO addObservation(@RequestBody ObservationDTO observationDTO) {
         return observationService.createObservation(observationDTO);
     }
+    @PreAuthorize("hasAnyRole('DOCTOR')")
     @PostMapping("/makeDiagnosis")
     public ConditionDTO addDiagnosis(@RequestBody ConditionDTO conditionDTO) {
         return conditionService.createCondition(conditionDTO);
     }
+    @PreAuthorize("hasAnyRole('worker', 'doctor','patient')")
     @GetMapping("/{id}/journal")
     public PatientJournalDTO getPatientJournal(@PathVariable Long id) {
         PatientDTO patient = patientService.getPatientById(id);
