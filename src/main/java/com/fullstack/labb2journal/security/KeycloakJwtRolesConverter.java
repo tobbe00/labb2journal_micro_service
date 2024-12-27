@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class KeycloakJwtRolesConverter extends JwtAuthenticationConverter {
 
-
+//hey
     protected Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
