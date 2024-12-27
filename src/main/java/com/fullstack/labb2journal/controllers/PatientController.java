@@ -46,7 +46,7 @@ public class PatientController {
     public ConditionDTO addDiagnosis(@RequestBody ConditionDTO conditionDTO) {
         return conditionService.createCondition(conditionDTO);
     }
-    @PreAuthorize("hasAnyRole('worker', 'doctor','patient')")
+    @PreAuthorize("hasAnyRole('worker', 'doctor','ROLE_patient')")
     @GetMapping("/{id}/journal")
     public PatientJournalDTO getPatientJournal(@PathVariable Long id) {
         PatientDTO patient = patientService.getPatientById(id);

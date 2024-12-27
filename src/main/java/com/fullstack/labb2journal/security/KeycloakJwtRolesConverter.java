@@ -1,4 +1,5 @@
 package com.fullstack.labb2journal.security;
+
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,20 +11,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 public class KeycloakJwtRolesConverter implements Converter<Jwt, JwtAuthenticationToken> {
 
     @Override
     public JwtAuthenticationToken convert(Jwt jwt) {
-        // Extract authorities using the helper method
+        // Extract authorities from the token
         Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
 
-        // You can also extract additional claims such as the username
+        // Extract the username for the principal
         String username = jwt.getClaimAsString("preferred_username");
 
-        // Return a JwtAuthenticationToken with the extracted authorities
+        // Return a JwtAuthenticationToken with the authorities and username
         return new JwtAuthenticationToken(jwt, authorities, username);
     }
 
@@ -31,26 +31,26 @@ public class KeycloakJwtRolesConverter implements Converter<Jwt, JwtAuthenticati
         List<GrantedAuthority> authorities = new ArrayList<>();
 
         // Extract roles from "realm_access"
-        Map<String, Object> realmAccess = (Map<String, Object>) jwt.getClaims().get("realm_access");
-        if (realmAccess != null && realmAccess.containsKey("roles")) {
+        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
+        if (realmAccess != null) {
             List<String> roles = (List<String>) realmAccess.get("roles");
-            roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
+            if (roles != null) {
+                roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
+            }
         }
 
-        // Extract roles from "resource_access" (optional)
-        Map<String, Object> resourceAccess = (Map<String, Object>) jwt.getClaims().get("resource_access");
+        // Extract roles from "resource_access.account"
+        Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
         if (resourceAccess != null) {
-            resourceAccess.forEach((resource, rolesObj) -> {
-                if (rolesObj instanceof Map) {
-                    Map<String, Object> resourceRoles = (Map<String, Object>) rolesObj;
-                    List<String> resourceRolesList = (List<String>) resourceRoles.get("roles");
-                    if (resourceRolesList != null) {
-                        resourceRolesList.forEach(role ->
-                                authorities.add(new SimpleGrantedAuthority("ROLE_" + resource + "_" + role))
-                        );
-                    }
+            Map<String, Object> account = (Map<String, Object>) resourceAccess.get("account");
+            if (account != null) {
+                List<String> accountRoles = (List<String>) account.get("roles");
+                if (accountRoles != null) {
+                    accountRoles.forEach(role ->
+                            authorities.add(new SimpleGrantedAuthority("ROLE_account_" + role))
+                    );
                 }
-            });
+            }
         }
 
         return authorities;
