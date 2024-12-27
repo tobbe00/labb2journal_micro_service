@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -20,7 +19,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()  // Require authentication for other endpoints
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter())) // Use your custom JWT converter
                 )
                 .csrf(csrf -> csrf.disable())  // Disable CSRF for APIs
                 .cors(cors -> cors.configurationSource(request -> {
@@ -29,19 +28,13 @@ public class SecurityConfig {
                     corsConfig.addAllowedMethod("*");  // Allow all HTTP methods (GET, POST, etc.)
                     corsConfig.addAllowedHeader("*");  // Allow all headers
                     return corsConfig;
-                }));  // Configure CORS properly inside Spring Security
+                }));
 
         return http.build();
     }
 
     @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
-        converter.setAuthoritiesClaimName("realm_access.roles");
-        // Removed the line that added the ROLE_ prefix dynamically
-
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(converter);
-        return jwtAuthenticationConverter;
+    public JwtAuthenticationConverter jwtAuthConverter() {
+        return new KeycloakJwtRolesConverter(); // Use the KeycloakJwtRolesConverter
     }
 }
