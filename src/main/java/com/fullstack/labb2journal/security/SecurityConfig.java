@@ -10,7 +10,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -46,16 +45,20 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowCredentials(true);
-        corsConfig.addAllowedOrigin("http://labb2frontend.app.cloud.cbh.kth.se"); // Allow specific frontend origin
+        corsConfig.addAllowedOrigin("https://labb2frontend.app.cloud.cbh.kth.se"); // Allow specific frontend origin
         corsConfig.addAllowedHeader("*");  // Allow all headers
         corsConfig.addAllowedMethod(HttpMethod.GET);  // Allow GET requests
         corsConfig.addAllowedMethod(HttpMethod.POST); // Allow POST requests
         corsConfig.addAllowedMethod(HttpMethod.PUT);  // Allow PUT requests
         corsConfig.addAllowedMethod(HttpMethod.DELETE); // Allow DELETE requests
 
+        // Handle preflight requests (OPTIONS)
+        corsConfig.addExposedHeader("Access-Control-Allow-Origin");
+        corsConfig.addExposedHeader("Access-Control-Allow-Methods");
+        corsConfig.addExposedHeader("Access-Control-Allow-Headers");
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);  // Apply CORS to all endpoints
         return source;
     }
 }
-
