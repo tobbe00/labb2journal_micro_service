@@ -29,13 +29,14 @@ public class WebSecurityConfiguration {
                         ))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/public").permitAll()  // Public endpoint, no authentication needed
-                        .requestMatchers("/shared-endpoint")
+                        .requestMatchers("/**/journal")
                         .hasAnyAuthority(
                                 KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_worker",
                                 KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_doctor",
                                 KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_patient"
                         ) // Allow access to worker, doctor, and patient roles
-                        .requestMatchers("/worker").hasAuthority(KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_worker")
+
+                        .requestMatchers("/**/journal").hasAuthority(KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_worker")
                         .requestMatchers("/doctor").hasAuthority(KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_doctor")
                         .requestMatchers("/patient").hasAuthority(KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_patient")
                         .anyRequest().authenticated()) // All other endpoints require authentication
