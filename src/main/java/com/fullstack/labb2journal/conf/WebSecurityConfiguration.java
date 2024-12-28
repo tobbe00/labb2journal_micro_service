@@ -17,32 +17,30 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
+        // Set up the authorities converter
         DelegatingJwtGrantedAuthoritiesConverter authoritiesConverter =
                 new DelegatingJwtGrantedAuthoritiesConverter(
                         new JwtGrantedAuthoritiesConverter(),
                         new KeycloakJwtRolesConverter());
 
+        // Configure the security filter chain to only secure /journals endpoint
         httpSecurity
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(
                                 jwtToken -> new JwtAuthenticationToken(jwtToken, authoritiesConverter.convert(jwtToken)))
                         ))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/public").permitAll()  // Public endpoint, no authentication needed
-                        .requestMatchers("/**/journal")
+                        .requestMatchers("/journals")
                         .hasAnyAuthority(
-                                KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_worker",
-                                KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_doctor",
-                                KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_patient"
-                        ) // Allow access to worker, doctor, and patient roles
-
-                        .requestMatchers("worker").hasAuthority(KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_worker")
-                        .requestMatchers("/doctor").hasAuthority(KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_doctor")
-                        .requestMatchers("/patient").hasAuthority(KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "rest-api_patient")
-                        .anyRequest().authenticated()) // All other endpoints require authentication
+                                KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "worker",
+                                KeycloakJwtRolesConverter.PREFIX_RESOURCE_ROLE + "doctor",
+                                KeycloakJwtRolesConverter.PREFIX_REALM_ROLE + "patient"
+                        ) // Allow access to specific roles for /journals endpoint
+                        .anyRequest().permitAll() // Allow other endpoints without authentication
+                )
                 .csrf(csrf -> csrf.disable()); // Disable CSRF for API endpoints (enable if needed for your app)
 
         return httpSecurity.build();
     }
-
 }
+
