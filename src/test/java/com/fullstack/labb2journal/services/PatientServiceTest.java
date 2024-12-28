@@ -1,6 +1,7 @@
 package com.fullstack.labb2journal.services;
 
 import com.fullstack.labb2journal.dto.PatientDTO;
+import com.fullstack.labb2journal.dto.UserDTO;
 import com.fullstack.labb2journal.entitys.Patient;
 import com.fullstack.labb2journal.entitys.User;
 import com.fullstack.labb2journal.mappers.Mapper;
@@ -20,12 +21,13 @@ class PatientServiceTest {
     private PatientService patientService;
     private PatientRepository patientRepository;
     private Mapper<Patient, PatientDTO> patientMapper;
+    private Mapper<User, UserDTO> userMapper;
 
     @BeforeEach
     void setUp() {
         patientRepository = mock(PatientRepository.class);
         patientMapper = mock(Mapper.class);
-        patientService = new PatientService(patientRepository, patientMapper);
+        patientService = new PatientService(patientRepository, patientMapper,userMapper);
     }
 
     @Test

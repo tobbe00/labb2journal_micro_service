@@ -10,4 +10,5 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
     Optional<Patient> findByUser(User user); // Använd User-objekt direkt
     boolean existsByUser(User user); // Lägg till exists-metoden
 
+
 }

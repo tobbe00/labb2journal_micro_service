@@ -79,6 +79,9 @@ public class UserService {
         }
         return workerDTOs;
     }
+    public UserDTO getUserById(int id) {
+        return userMapper.mapToDTO(userRepository.findById(id).get());
+    }
     public UserDTO getUserByEmail(String email) {
         return userMapper.mapToDTO(userRepository.findByEmail(email));
     }

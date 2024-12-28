@@ -48,12 +48,15 @@ public class PatientController {
     }
     @PreAuthorize("hasAnyRole('worker', 'doctor', 'patient')")
     @GetMapping("/{id}/journal")
-    public PatientJournalDTO getPatientJournal(@PathVariable Long id) {
-        PatientDTO patient = patientService.getPatientById(id);
+    public PatientJournalDTO getPatientJournal(@PathVariable int id) {
+        UserDTO user=userService.getUserById(id);
+        int patintId=patientService.getPatientByUser(user).getPatientId();
+        PatientDTO patient = patientService.getPatientById(Long.valueOf(patintId));//tror den ska heta by patient id
 
         // Hämta tillstånd och observationer för patienten
-        List<ConditionDTO> conditions = conditionService.getConditionsByPatientId(id.intValue());
-        List<ObservationDTO> observations = observationService.getObservationsByPatientId(id.intValue());
+        int patientId= patient.getPatientId();
+        List<ConditionDTO> conditions = conditionService.getConditionsByPatientId(patientId);
+        List<ObservationDTO> observations = observationService.getObservationsByPatientId(patientId);
         User.Gender g;
         if (patient.getGender().equals("MALE")){
             g=User.Gender.MALE;
