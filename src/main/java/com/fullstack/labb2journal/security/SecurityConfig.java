@@ -1,18 +1,14 @@
 package com.fullstack.labb2journal.security;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -20,22 +16,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Configure security filter chain
         http
-                .csrf()
-                .disable()
-                .authorizeHttpRequests()
-                .anyRequest()
-                .authenticated();
-
-        http
-                .oauth2ResourceServer()
-                .jwt()
-                .jwtAuthenticationConverter(jwtAuthConverter);
-
-        http
-                .sessionManagement()
-                .sessionCreationPolicy(STATELESS);
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for API endpoints
+                .authorizeHttpRequests(authz -> authz
+                        .anyRequest().authenticated() // Secure all requests, require authentication
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter)) // Use custom JWT converter
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS) // Stateless session management
+                );
 
         return http.build();
     }
 }
+
