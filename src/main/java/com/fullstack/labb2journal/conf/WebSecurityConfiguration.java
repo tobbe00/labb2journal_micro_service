@@ -1,6 +1,6 @@
 package com.fullstack.labb2journal.conf;
 
-import com.fullstack.labb2journal.security.KeycloakJwtRolesConverter;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.server.resource.authentication.Delega
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-
+/*
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration {
@@ -44,3 +44,4 @@ public class WebSecurityConfiguration {
     }
 }
 
+*/

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+/*
 public class KeycloakJwtRolesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
     public static final String PREFIX_REALM_ROLE = "ROLE_realm_";
     public static final String PREFIX_RESOURCE_ROLE = "ROLE_";
@@ -52,3 +52,4 @@ public class KeycloakJwtRolesConverter implements Converter<Jwt, Collection<Gran
         return grantedAuthorities;
     }
 }
+*/

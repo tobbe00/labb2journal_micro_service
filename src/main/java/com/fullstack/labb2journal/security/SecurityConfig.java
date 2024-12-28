@@ -1,30 +1,40 @@
 package com.fullstack.labb2journal.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
+@EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthConverter jwtAuthConverter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakJwtRolesConverter());
+        http
+                .csrf()
+                .disable()
+                .authorizeHttpRequests()
+                .anyRequest()
+                .authenticated();
 
         http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/healthz").permitAll()
-                        .requestMatchers("/api/patients").hasRole("realm_patient")
-                        .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
-                )
-                .csrf(csrf -> csrf.disable()); // Disable CSRF if not needed for APIs
+                .oauth2ResourceServer()
+                .jwt()
+                .jwtAuthenticationConverter(jwtAuthConverter);
+
+        http
+                .sessionManagement()
+                .sessionCreationPolicy(STATELESS);
 
         return http.build();
     }
