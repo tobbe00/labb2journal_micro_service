@@ -4,55 +4,51 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-@Component
-public class KeycloakJwtRolesConverter implements Converter<Jwt, JwtAuthenticationToken> {
+public class KeycloakJwtRolesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
+    public static final String PREFIX_REALM_ROLE = "ROLE_realm_";
+    public static final String PREFIX_RESOURCE_ROLE = "ROLE_";
+    private static final String CLAIM_REALM_ACCESS = "realm_access";
+    private static final String CLAIM_RESOURCE_ACCESS = "resource_access";
+    private static final String CLAIM_ROLES = "roles";
 
     @Override
-    public JwtAuthenticationToken convert(Jwt jwt) {
-        // Extract authorities from the token
-        Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
+    public Collection<GrantedAuthority> convert(Jwt jwt) {
+        Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
-        // Extract the username for the principal
-        String username = jwt.getClaimAsString("preferred_username");
-
-        // Return a JwtAuthenticationToken with the authorities and username
-        return new JwtAuthenticationToken(jwt, authorities, username);
-    }
-
-    private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-
-        // Extract roles from "realm_access"
-        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
-        if (realmAccess != null) {
-            List<String> roles = (List<String>) realmAccess.get("roles");
+        // Extract realm roles
+        Map<String, Object> realmAccess = jwt.getClaim(CLAIM_REALM_ACCESS);
+        if (realmAccess != null && realmAccess.containsKey(CLAIM_ROLES)) {
+            Collection<String> roles = (Collection<String>) realmAccess.get(CLAIM_ROLES);
             if (roles != null) {
-                roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
+                grantedAuthorities.addAll(roles.stream()
+                        .map(role -> new SimpleGrantedAuthority(PREFIX_REALM_ROLE + role))
+                        .collect(Collectors.toList()));
             }
         }
 
-        // Extract roles from "resource_access.account"
-        Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
+        // Extract resource roles
+        Map<String, Object> resourceAccess = jwt.getClaim(CLAIM_RESOURCE_ACCESS);
         if (resourceAccess != null) {
-            Map<String, Object> account = (Map<String, Object>) resourceAccess.get("account");
-            if (account != null) {
-                List<String> accountRoles = (List<String>) account.get("roles");
-                if (accountRoles != null) {
-                    accountRoles.forEach(role ->
-                            authorities.add(new SimpleGrantedAuthority("ROLE_account_" + role))
-                    );
+            resourceAccess.forEach((resource, resourceClaims) -> {
+                if (resourceClaims instanceof Map) {
+                    Map<String, Object> claims = (Map<String, Object>) resourceClaims;
+                    if (claims.containsKey(CLAIM_ROLES)) {
+                        Collection<String> roles = (Collection<String>) claims.get(CLAIM_ROLES);
+                        if (roles != null) {
+                            roles.forEach(role -> grantedAuthorities.add(
+                                    new SimpleGrantedAuthority(PREFIX_RESOURCE_ROLE + resource + "_" + role)));
+                        }
+                    }
                 }
-            }
+            });
         }
 
-        return authorities;
+        return grantedAuthorities;
     }
 }

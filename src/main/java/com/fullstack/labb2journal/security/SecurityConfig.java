@@ -10,30 +10,21 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final KeycloakJwtRolesConverter keycloakJwtRolesConverter;
-
-    public SecurityConfig(KeycloakJwtRolesConverter keycloakJwtRolesConverter) {
-        this.keycloakJwtRolesConverter = keycloakJwtRolesConverter;
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakJwtRolesConverter());
+
         http
-                .authorizeRequests(auth -> auth
-                        .requestMatchers("/public/**").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/healthz").permitAll()
+                        .requestMatchers("/api/patients").hasRole("realm_patient")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakJwtRolesConverter))
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
                 )
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(request -> {
-                    var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfig.addAllowedOrigin("https://labb2frontend.app.cloud.cbh.kth.se");
-                    corsConfig.addAllowedMethod("*");
-                    corsConfig.addAllowedHeader("*");
-                    return corsConfig;
-                }));
+                .csrf(csrf -> csrf.disable()); // Disable CSRF if not needed for APIs
 
         return http.build();
     }
