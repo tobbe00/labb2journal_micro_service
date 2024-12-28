@@ -41,7 +41,7 @@ public class PatientController {
     public ObservationDTO addObservation(@RequestBody ObservationDTO observationDTO) {
         return observationService.createObservation(observationDTO);
     }
-    @PreAuthorize("hasAnyRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('doctor')")
     @PostMapping("/makeDiagnosis")
     public ConditionDTO addDiagnosis(@RequestBody ConditionDTO conditionDTO) {
         return conditionService.createCondition(conditionDTO);
@@ -75,6 +75,37 @@ public class PatientController {
         );
         return patientJournalDTO;
     }
+    @PreAuthorize("hasAnyRole('worker', 'doctor', 'patient')")
+    @GetMapping("/{id}/journal/doc")
+    public PatientJournalDTO getPatientJournalByPatientId(@PathVariable int id) {
+
+
+        PatientDTO patient = patientService.getPatientById(Long.valueOf(id));//tror den ska heta by patient id
+
+        // Hämta tillstånd och observationer för patienten
+        int patientId= patient.getPatientId();
+        List<ConditionDTO> conditions = conditionService.getConditionsByPatientId(patientId);
+        List<ObservationDTO> observations = observationService.getObservationsByPatientId(patientId);
+        User.Gender g;
+        if (patient.getGender().equals("MALE")){
+            g=User.Gender.MALE;
+        }else if(patient.getGender().equals("FEMALE")){
+            g=User.Gender.FEMALE;
+        }else {
+            g=User.Gender.OTHER;
+        }
+        // Skapa och returnera PatientJournalDTO
+        PatientJournalDTO patientJournalDTO = new PatientJournalDTO(
+                patient.getName(),
+                patient.getAge(),
+                g,
+                conditions,
+                observations
+        );
+        return patientJournalDTO;
+    }
+
+
     @PreAuthorize("isAuthenticated()")
     @CrossOrigin(origins = "https://labb2frontend.app.cloud.cbh.kth.se")
     @GetMapping("/patientByEmail")
